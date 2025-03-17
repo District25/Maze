@@ -1,0 +1,21 @@
+# Fichiers de compilation
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.dll
+*.exe
+
+# Fichiers Qt Creator
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+
+# Répertoires de build
+/build-*/
+build-*/
+
+# Archives
+*.zip
