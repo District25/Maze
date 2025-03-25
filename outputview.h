@@ -1,22 +1,24 @@
 #ifndef OUTPUTVIEW_H
 #define OUTPUTVIEW_H
 
-#include "Observer.h"
-#include "Maze.h"
-#include "Coord.h"
-
 #include <QString>
+#include <QWidget>
+#include <QPainter>
 
-class OutputView : public Observer
-{
+#include "Coord.h"
+#include "Observer.h"
+#include "maze.h"
+
+class OutputView : public QWidget, public Observer{
+    Q_OBJECT
 private :
     Maze* model;
 public:
-    OutputView(Maze* maze);
+    explicit OutputView(Maze *maze, QWidget *parent = nullptr);
     void update() override;
-    void displayGamefield();
-    void displayRobot(Coord pos);
     void displayMessage(QString message);
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // OUTPUTVIEW_H

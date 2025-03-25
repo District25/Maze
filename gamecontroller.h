@@ -1,24 +1,32 @@
 #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 
-#include "Maze.h"
-#include "InputView.h"
-#include "OutputView.h"
-#include "Algorithm.h"
+#include <QTimer>
+#include <QObject>
 
-class GameController {
+#include "outputview.h"
+#include "maze.h"
+#include "inputview.h"
+#include "algorithm.h"
+
+class GameController : public QObject{
+    Q_OBJECT
 private:
+    QTimer* timer;
     Maze* model;
     InputView* inputView;
     OutputView* outputView;
     Algorithm* algorithm;
+    std::vector<Coord> visited;
 
 public:
     GameController(Maze* maze, InputView* iv, OutputView* ov, Algorithm* algo);
     void startGame();
-    void ComputeNextMove();
     bool isMoveValid();
     bool checkVictory();
+    Maze* getMaze();
+public slots:
+    void ComputeNextMove();
 };
 
 #endif

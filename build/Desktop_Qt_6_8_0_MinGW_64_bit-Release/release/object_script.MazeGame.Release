@@ -1,0 +1,11 @@
+release/algorithm.o
+release/gamecontroller.o
+release/gamefactory.o
+release/inputview.o
+release/main.o
+release/mainwindow.o
+release/maze.o
+release/outputview.o
+release/moc_gamecontroller.o
+release/moc_mainwindow.o
+release/moc_outputview.o

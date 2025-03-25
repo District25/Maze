@@ -11,14 +11,24 @@ private:
     std::vector<std::vector<int>> grid;
     Coord robotPosition;
     Coord exitPosition;
+    int rows=0;
+    int col=0;
+    bool Win = false;
 public:
     Maze();
-    Maze(int rows, int cols);
-
+    // Getter
     Coord getRobotPosition() const;
     Coord getExitPosition() const;
+    int getRows() const;
+    int getCol() const;
+
+    // Setter
+    void setWin(bool state);
+
+    Coord placeRobotRandomly() const;
     void moveRobot(Coord next);
     bool isCellFree(int x, int y) const;
+    bool hasWon();
 
     // Implémentations OBLIGATOIRES des méthodes de Subject
     void subscribe(Observer* o) override;

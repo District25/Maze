@@ -3,20 +3,21 @@
 
 #include "inputview.h"
 #include "outputview.h"
-#include "algorithm"
+#include "algorithm.h"
 #include "gamecontroller.h"
 #include "Coord.h"
 #include "maze.h"
+
+#include <QWidget>
 
 class GameFactory
 {
 public:
     static Maze* createMaze();
     static InputView* createInputView();
-    static OutputView* createOutputView(Maze* maze);
+    static OutputView* createOutputView(Maze* maze, QWidget* parent);
     static Algorithm* createAlgorithm();
-    static Coord* createCoord();
-    static GameController* createGameController(Maze* maze, InputView* iv, OutputView* ov, Algorithm* algo);
+    static GameController* createGameController();
 };
 
 #endif // GAMEFACTORY_H

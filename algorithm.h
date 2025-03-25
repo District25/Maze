@@ -3,12 +3,16 @@
 
 #include "maze.h"
 #include "Coord.h"
+#include <set>
+#include <algorithm>
+#include <random>
 
 class Algorithm
 {
 public:
     Algorithm();
-    Coord findPath(Maze* maze);
+    void findPath(Maze *maze, Coord currentPos, std::vector<Coord>& visited);
+    void InitGrid(Maze *maze);
 };
 
 #endif // ALGORITHM_H
