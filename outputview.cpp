@@ -4,44 +4,49 @@
 
 using namespace std;
 
-OutputView::OutputView(Maze *maze, QWidget *parent) : QWidget(parent), model(maze) {}
+int cellSize = 20;
+
+OutputView::OutputView(Maze *maze, QWidget *parent) : QGraphicsView(parent), model(maze) {
+    int width = (model->getCol() + 2) * cellSize;
+    int height = (model->getRows() + 2) * cellSize;
+
+    this->setFixedSize(width, height);
+    scene = new QGraphicsScene(this);
+    scene->setSceneRect(-10, -10, width, height);
+    scene->setBackgroundBrush(Qt::white);
+    this->setScene(scene);
+}
 
 
 
 void OutputView::update()
 {
-    QWidget::update();
+    drawMaze();
 }
 
-
-void OutputView::displayMessage(QString message)
+void OutputView::drawMaze()
 {
-
-}
-
-void OutputView::paintEvent(QPaintEvent* event) {
-    QPainter painter(this);
-
-    int cellSize = 20;  // Taille des cases du labyrinthe
+    scene->clear();  // Nettoyage avant redessin
 
     Coord robotPos = model->getRobotPosition();
     Coord exitPos = model->getExitPosition();
 
-    for (int i = 0; i < model->getRows(); i++) {
-        for (int j = 0; j < model->getCol(); j++) {
-            QRect cell(j * cellSize, i * cellSize, cellSize, cellSize);
+    for (int y = 0; y < model->getRows(); y++) {
+        for (int x = 0; x < model->getCol(); x++) {
+            QRectF cell(x * cellSize, y * cellSize, cellSize, cellSize);
+            QGraphicsRectItem *rect = scene->addRect(cell);
 
-            if (!model->isCellFree(i, j)) {
-                painter.setBrush(Qt::black);  // Mur
-            } else if (robotPos.x == i && robotPos.y == j) {
-                painter.setBrush(Qt::red);    // Robot
-            } else if (exitPos.x == i && exitPos.y == j) {
-                painter.setBrush(Qt::green);  // Sortie
+            if (!model->isCellFree(y, x)) {
+                rect->setBrush(QColor("#222222"));  // mur foncé
+                rect->setPen(Qt::NoPen);
+            } else if (robotPos.x == x && robotPos.y == y) {
+                rect->setBrush(Qt::red);
+            } else if (exitPos.x == x && exitPos.y == y) {
+                rect->setBrush(Qt::green);
             } else {
-                painter.setBrush(Qt::white);  // Vide
+                rect->setBrush(QColor("#eeeeee"));  // couloir clair
+                rect->setPen(QPen(QColor("#eeeeee")));       // contour léger
             }
-
-            painter.drawRect(cell);  // Dessine la cellule
         }
     }
 }

@@ -21,7 +21,7 @@ void GameController::startGame(){
 void GameController::ComputeNextMove()
 {
     if(!checkVictory()){
-        algorithm->findPath(model, model->getRobotPosition(), visited);
+        algorithm->leftWallFollower(model, model->getRobotPosition());
         model->notifyObservers();
     }
     else

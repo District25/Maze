@@ -4,6 +4,9 @@
 #include "Subject.h"
 #include "Coord.h"
 #include <vector>
+#include <random>
+#include <vector>
+#include <algorithm>
 
 class Maze : public Subject
 {
@@ -16,6 +19,7 @@ private:
     bool Win = false;
 public:
     Maze();
+    Maze(int rows, int col);
     // Getter
     Coord getRobotPosition() const;
     Coord getExitPosition() const;
@@ -29,6 +33,7 @@ public:
     void moveRobot(Coord next);
     bool isCellFree(int x, int y) const;
     bool hasWon();
+    void generateMaze();
 
     // Implémentations OBLIGATOIRES des méthodes de Subject
     void subscribe(Observer* o) override;

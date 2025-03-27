@@ -2,23 +2,23 @@
 #define OUTPUTVIEW_H
 
 #include <QString>
-#include <QWidget>
-#include <QPainter>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsRectItem>
 
 #include "Coord.h"
 #include "Observer.h"
 #include "maze.h"
 
-class OutputView : public QWidget, public Observer{
+class OutputView : public QGraphicsView, public Observer{
     Q_OBJECT
 private :
     Maze* model;
+    QGraphicsScene *scene;
 public:
     explicit OutputView(Maze *maze, QWidget *parent = nullptr);
     void update() override;
-    void displayMessage(QString message);
-protected:
-    void paintEvent(QPaintEvent *event) override;
+    void drawMaze();
 };
 
 #endif // OUTPUTVIEW_H

@@ -11,8 +11,7 @@ class Algorithm
 {
 public:
     Algorithm();
-    void findPath(Maze *maze, Coord currentPos, std::vector<Coord>& visited);
-    void InitGrid(Maze *maze);
+    void leftWallFollower(Maze *maze, Coord currentPos);
 };
 
 #endif // ALGORITHM_H

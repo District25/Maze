@@ -17,7 +17,6 @@ private:
     InputView* inputView;
     OutputView* outputView;
     Algorithm* algorithm;
-    std::vector<Coord> visited;
 
 public:
     GameController(Maze* maze, InputView* iv, OutputView* ov, Algorithm* algo);
