@@ -17,12 +17,13 @@ private:
     InputView* inputView;
     OutputView* outputView;
     Algorithm* algorithm;
+    size_t indexAnim;
 
 public:
     GameController(Maze* maze, InputView* iv, OutputView* ov, Algorithm* algo);
     void startGame();
-    bool isMoveValid();
     bool checkVictory();
+    size_t getIndexAnim() const;
     Maze* getMaze();
 public slots:
     void ComputeNextMove();

@@ -3,15 +3,17 @@
 
 #include "maze.h"
 #include "Coord.h"
-#include <set>
-#include <algorithm>
-#include <random>
 
 class Algorithm
 {
 public:
     Algorithm();
     void leftWallFollower(Maze *maze, Coord currentPos);
+    void findOptimalPath();
+    const std::vector<Coord>& getOptimalPath() const;
+private:
+    std::vector<Coord> fullPath;
+    std::vector<Coord> optimalPath;
 };
 
 #endif // ALGORITHM_H
