@@ -64,9 +64,10 @@ void OutputView::drawMaze()
             Coord p = algo->getOptimalPath()[i];
             QRectF cell(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
             QGraphicsRectItem *rect = scene->addRect(cell);
-                rect->setBrush(QColor(Qt::green));
-                rect->setPen(QPen(QColor(Qt::green)));
-
+            if(!(algo->getOptimalPath()[i] == model->getInitRobotPosition())){
+                rect->setBrush(QColor(Qt::cyan));
+                rect->setPen(QPen(QColor(Qt::cyan)));
+            }
         }
     }
 

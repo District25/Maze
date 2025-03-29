@@ -30,7 +30,8 @@ Maze::Maze(){
 Maze::Maze(int rows, int col)
 {
     generateMaze(rows, col);
-    robotPosition = placeRobotRandomly();
+    initRobotPosition = placeRobotRandomly();
+    robotPosition = initRobotPosition;
 }
 
 // This function is able to generate random perfect maze
