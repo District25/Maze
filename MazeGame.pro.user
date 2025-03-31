@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD
 <!-- Written by QtCreator 14.0.2, 2025-03-17T16:09:51. -->
+=======
+<!-- Written by QtCreator 14.0.2, 2025-03-31T10:59:28. -->
+>>>>>>> 9e7278f (Temporary commit - waiting to transfer updates to version-1.0 branch)
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
