@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     algorithm.cpp \
+    buttonview.cpp \
     gamecontroller.cpp \
     gamefactory.cpp \
     inputview.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     Observer.h \
     Subject.h \
     algorithm.h \
+    buttonview.h \
     gamecontroller.h \
     gamefactory.h \
     inputview.h \

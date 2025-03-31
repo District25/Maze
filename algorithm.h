@@ -11,6 +11,7 @@ public:
     void leftWallFollower(Maze *maze, Coord currentPos);
     void findOptimalPath();
     const std::vector<Coord>& getOptimalPath() const;
+    void resetPaths();
 private:
     std::vector<Coord> fullPath;
     std::vector<Coord> optimalPath;

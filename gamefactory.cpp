@@ -7,9 +7,27 @@ GameController *GameFactory::createGameController()
     InputView* iv = createInputView();
     OutputView* ov = createOutputView(maze, nullptr);
     Algorithm* algo = createAlgorithm();
-    GameController* gc = new GameController(maze, iv, ov, algo);
+    buttonView* bv = createButtonView(nullptr);
+
+    GameController* gc = new GameController(maze, iv, ov, algo, bv);
     ov->setController(gc);
+
+    QWidget* mainWidget = new QWidget;
+    QHBoxLayout* layout = new QHBoxLayout;
+
+    layout->addWidget(ov);
+    layout->addWidget(bv);
+
+    mainWidget->setLayout(layout);
+    mainWidget->setWindowTitle("Maze Game");
+
+    mainWidget->show();
     return gc;
+}
+
+buttonView *GameFactory::createButtonView(QWidget* parent)
+{
+    return new buttonView(parent);
 }
 
 // Create the maze

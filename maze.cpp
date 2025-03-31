@@ -5,7 +5,7 @@
 
 // Default constructor
 Maze::Maze(){
-    grid = {
+    /*grid = {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         {1,0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,1},
         {1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,1,1,0,1,0,1},
@@ -23,15 +23,17 @@ Maze::Maze(){
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
     };
     initRobotPosition = placeRobotRandomly();
-    robotPosition = initRobotPosition;
+    robotPosition = initRobotPosition;*/
 }
 
 // Parameter constructor
 Maze::Maze(int rows, int col)
 {
-    generateMaze(rows, col);
+    /*generateMaze(rows, col);
     initRobotPosition = placeRobotRandomly();
-    robotPosition = initRobotPosition;
+    robotPosition = initRobotPosition;*/
+    robotPosition = (1, 1); // absent initialement
+    grid = std::vector<std::vector<int>>(rows, std::vector<int>(col, 1));
 }
 
 // This function is able to generate random perfect maze
@@ -77,6 +79,12 @@ void Maze::generateMaze(int rows, int cols)
     }
 }
 
+void Maze::resetMaze()
+{
+    robotPosition = (1, 1); // absent initialement
+    grid = std::vector<std::vector<int>>(rows, std::vector<int>(col, 1));
+}
+
 // Place the robot in any free cells of the maze randomly
 Coord Maze::placeRobotRandomly() const
 {
@@ -118,6 +126,8 @@ Coord Maze::getExitPosition() const { return exitPosition; }
 // Return the initial robot position
 Coord Maze::getInitRobotPosition() const { return initRobotPosition; }
 
+std::vector<std::vector<int> > Maze::getGrid() { return grid; }
+
 // Set the robot position
 void Maze::setRobotPosition(Coord pos) { robotPosition = pos; }
 
@@ -144,3 +154,5 @@ int Maze::getCol() const{ return grid[0].size();}
 
 // Set Winning state after finding the exit with robot
 void Maze::setWin(bool state){ Win = state; }
+
+void Maze::setGrid(const std::vector<std::vector<int> > &newGrid) { grid = newGrid; }

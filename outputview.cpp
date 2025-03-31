@@ -19,6 +19,10 @@ OutputView::OutputView(Maze *maze, QWidget *parent) : QGraphicsView(parent), mod
     this->setScene(scene);
 }
 
+void OutputView::setController(GameController *gc)
+{
+    controller = gc;
+}
 void OutputView::setAlgorithm(Algorithm *algorithm)
 {
     this->algo = algorithm;
@@ -64,18 +68,12 @@ void OutputView::drawMaze()
             Coord p = algo->getOptimalPath()[i];
             QRectF cell(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
             QGraphicsRectItem *rect = scene->addRect(cell);
-            if(!(algo->getOptimalPath()[i] == model->getInitRobotPosition())){
-                rect->setBrush(QColor(Qt::cyan));
-                rect->setPen(QPen(QColor(Qt::cyan)));
-            }
+            rect->setBrush(QColor(Qt::cyan));
+            rect->setPen(QPen(QColor(Qt::cyan)));
         }
     }
 
 
 }
 
-void OutputView::setController(GameController *gc)
-{
-    controller = gc;
-}
 

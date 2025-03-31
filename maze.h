@@ -4,7 +4,6 @@
 #include "Subject.h"
 #include "Coord.h"
 #include <vector>
-#include <vector>
 
 class Maze : public Subject
 {
@@ -23,18 +22,21 @@ public:
     Coord getRobotPosition() const;
     Coord getExitPosition() const;
     Coord getInitRobotPosition() const;
-    void setRobotPosition(Coord pos);
+    std::vector<std::vector<int>> getGrid();
     int getRows() const;
     int getCol() const;
 
     // Setter
     void setWin(bool state);
+    void setGrid(const std::vector<std::vector<int>>& newGrid);
+    void setRobotPosition(Coord pos);
 
     Coord placeRobotRandomly() const;
     void moveRobot(Coord next);
     bool isCellFree(int x, int y) const;
     bool hasWon();
     void generateMaze(int rows, int cols);
+    void resetMaze();
 
     // Implémentations OBLIGATOIRES des méthodes de Subject
     void subscribe(Observer* o) override;

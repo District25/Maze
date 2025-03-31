@@ -133,4 +133,10 @@ void Algorithm::findOptimalPath() {
 // Return the complete optimal path with the Coord value
 const std::vector<Coord>& Algorithm::getOptimalPath() const { return optimalPath; }
 
+void Algorithm::resetPaths()
+{
+    optimalPath.clear();
+    fullPath.clear();
+}
+
 
