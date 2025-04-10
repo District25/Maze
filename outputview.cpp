@@ -5,16 +5,17 @@
 
 using namespace std;
 
-int cellSize = 10; // Changes the size of the cell we see on window
+int cellSize = 5; // Changes the size of the cell we see on window
 
 // Constructor and set scene
 OutputView::OutputView(Maze *maze, QWidget *parent) : QGraphicsView(parent), model(maze) {
     int width = (model->getCol() + 2) * cellSize;
     int height = (model->getRows() + 2) * cellSize;
 
-    this->setFixedSize(width, height);
+    this->setMinimumSize(600, 600);
+
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(-10, -10, width, height);
+    scene->setSceneRect(-cellSize, -cellSize, width, height);
     scene->setBackgroundBrush(Qt::white);
     this->setScene(scene);
 }
@@ -72,8 +73,8 @@ void OutputView::drawMaze()
             rect->setPen(QPen(QColor(Qt::cyan)));
         }
     }
-
-
+    scene->setSceneRect(0, 0, model->getCol() * cellSize, model->getRows() * cellSize);
+    this->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 

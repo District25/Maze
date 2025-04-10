@@ -15,13 +15,15 @@ class GameController : public QObject{
     Q_OBJECT
 private:
     QTimer* timer;
+    QTimer* timer2;
     Maze* model;
     InputView* inputView;
     OutputView* outputView;
     Algorithm* algorithm;
     buttonView* btnView;
     size_t indexAnim;
-
+    bool start_stop; // true = start, false = stop
+    int timeOfAnimation;
 public:
     GameController(Maze* maze, InputView* iv, OutputView* ov, Algorithm* algo, buttonView* bv);
     void reset();
@@ -31,12 +33,12 @@ public:
     Maze* getMaze();
 public slots:
     void ComputeNextMove();
+    void handleAnimationTimer();
     void saveMazeToFile();
     void loadMazeFromFile();
-    void pauseSimulation();
     void generateRandMaze();
     void placeRobot();
-    void startSimulation();
+    void start_stopSimulation();
 };
 
 #endif

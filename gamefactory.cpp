@@ -19,6 +19,9 @@ GameController *GameFactory::createGameController()
     layout->addWidget(bv);
 
     mainWidget->setLayout(layout);
+    mainWidget->resize(ov->width() + 400, ov->height());
+
+
     mainWidget->setWindowTitle("Maze Game");
 
     mainWidget->show();
@@ -33,7 +36,7 @@ buttonView *GameFactory::createButtonView(QWidget* parent)
 // Create the maze
 Maze *GameFactory::createMaze()
 {
-    return new Maze(50, 50);
+    return new Maze(100, 100);
 }
 
 

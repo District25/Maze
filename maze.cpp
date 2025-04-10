@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <random>
 #include <ctime>
+#include <stack>
 
 // Default constructor
 Maze::Maze(){
@@ -29,15 +30,12 @@ Maze::Maze(){
 // Parameter constructor
 Maze::Maze(int rows, int col)
 {
-    /*generateMaze(rows, col);
-    initRobotPosition = placeRobotRandomly();
-    robotPosition = initRobotPosition;*/
     robotPosition = (1, 1); // absent initialement
     grid = std::vector<std::vector<int>>(rows, std::vector<int>(col, 1));
 }
 
-// This function is able to generate random perfect maze
-void Maze::generateMaze(int rows, int cols)
+// This function is able to generate random perfect maze (create issue because dfs gets to limit with big maze)
+/*void Maze::generateMaze(int rows, int cols)
 {
 
     // Initialing grid with only walls
@@ -77,7 +75,51 @@ void Maze::generateMaze(int rows, int cols)
             }
         }
     }
+}*/
+
+void Maze::generateMaze(int rows, int cols)
+{
+    // Initialise le labyrinthe avec des murs partout (1)
+    grid = std::vector<std::vector<int>>(rows, std::vector<int>(cols, 1));
+
+    std::stack<Coord> stack;
+    stack.push(Coord(1, 1)); // Point de départ
+    grid[1][1] = 0;
+
+    std::mt19937 rng(std::random_device{}());
+
+    while (!stack.empty()) {
+        Coord current = stack.top();
+
+        std::vector<Coord> directions = {
+            {2, 0}, {-2, 0}, {0, 2}, {0, -2}
+        };
+        std::shuffle(directions.begin(), directions.end(), rng);
+
+        bool moved = false;
+        for (const Coord& dir : directions) {
+            int nx = current.x + dir.x;
+            int ny = current.y + dir.y;
+
+            if (nx > 0 && nx < cols - 1 && ny > 0 && ny < rows - 1 && grid[ny][nx] == 1) {
+                // Creuse entre les deux cellules
+                grid[current.y + dir.y / 2][current.x + dir.x / 2] = 0;
+                grid[ny][nx] = 0;
+
+                stack.push(Coord(nx, ny));
+                moved = true;
+                break;
+            }
+        }
+
+        if (!moved) {
+            stack.pop(); // Aucun move possible → backtrack
+        }
+    }
+
+    placeExit(rows, cols);
 }
+
 
 void Maze::resetMaze()
 {
@@ -131,8 +173,27 @@ std::vector<std::vector<int> > Maze::getGrid() { return grid; }
 // Set the robot position
 void Maze::setRobotPosition(Coord pos) { robotPosition = pos; }
 
+void Maze::setGenerated(bool state)
+{
+    generated = state;
+}
+
 // Return true if robot found the exit
 bool Maze::hasWon(){ return Win; }
+
+void Maze::placeExit(int rows, int cols)
+{
+    // Place une sortie tout au fond
+    for (int y = rows - 2; y > 0; y--) {
+        for (int x = cols - 2; x > 0; x--) {
+            if (grid[y][x] == 0) {
+                grid[y][x] = 2;
+                exitPosition = Coord(x, y);
+                return;
+            }
+        }
+    }
+}
 
 // Add an observer to the list
 void Maze::subscribe(Observer* o) {
@@ -151,6 +212,11 @@ int Maze::getRows() const{ return grid.size();}
 
 // Return the # of cols in the maze
 int Maze::getCol() const{ return grid[0].size();}
+
+bool Maze::getGenerated() const
+{
+    return generated;
+}
 
 // Set Winning state after finding the exit with robot
 void Maze::setWin(bool state){ Win = state; }

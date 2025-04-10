@@ -7,7 +7,6 @@ int main(int argc, char *argv[]) {
 
     // 🔥 Création du GameController via la Factory
     GameController* controller = GameFactory::createGameController();
-    //controller->startGame();
 
     return app.exec();
 }

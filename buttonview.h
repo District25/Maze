@@ -4,7 +4,10 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QLineEdit>
 #include <QLabel>
+#include <QVBoxLayout>
+#include <QProgressBar>
 
 class buttonView : public QWidget
 {
@@ -16,19 +19,31 @@ public:
 signals:
     void saveRequested();
     void loadRequested();
-    void pauseRequested();
     void randMazeRequested();
     void randRobotPosRequested();
-    void startSimulRequested();
+    void start_stopSimulRequested();
 
 private:
     QPushButton *saveButton;
     QPushButton *loadButton;
-    QPushButton *pauseButton;
     QPushButton *randomMazeButton;
     QPushButton *randomRobotButton;
-    QPushButton *startButton;
+    QPushButton *start_stopButton;
+    QLineEdit *rows;
+    QLineEdit *cols;
     QLabel *win;
+    QLabel* statusLabel;
+    QLabel* timer;
+    QProgressBar* progressBar;
+
+public:
+    int getRows() const;
+    int getCols() const;
+    void showProcessingUI();
+    void winProcessingUI();
+    void pauseProcessingUI();
+    void hideProcessingUI();
+    void setTimer(int min, int sec, int cent);
 };
 
 #endif // BUTTONVIEW_H

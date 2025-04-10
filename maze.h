@@ -15,6 +15,7 @@ private:
     int rows=0;
     int col=0;
     bool Win = false;
+    bool generated = false;
 public:
     Maze();
     Maze(int rows, int col);
@@ -25,16 +26,19 @@ public:
     std::vector<std::vector<int>> getGrid();
     int getRows() const;
     int getCol() const;
+    bool getGenerated() const;
 
     // Setter
     void setWin(bool state);
     void setGrid(const std::vector<std::vector<int>>& newGrid);
     void setRobotPosition(Coord pos);
+    void setGenerated(bool state);
 
     Coord placeRobotRandomly() const;
     void moveRobot(Coord next);
     bool isCellFree(int x, int y) const;
     bool hasWon();
+    void placeExit(int rows, int cols);
     void generateMaze(int rows, int cols);
     void resetMaze();
 
