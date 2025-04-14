@@ -111,7 +111,7 @@ void GameController::checkVictory()
     Coord robotPos = model->getRobotPosition();
 
     // Is robot on the exit position ?
-    if(robotPos == exitPos){
+    if(robotPos == exitPos && !(model->hasWon())){
         // Place robot at where he started to start the animation
         model->setRobotPosition(model->getInitRobotPosition());
         model->setWin(true); // We enter the "win" mode that will display the animation

@@ -142,23 +142,50 @@ buttonView::buttonView(QWidget *parent) : QWidget(parent)
     connect(randomRobotButton, &QPushButton::clicked, this, &buttonView::randRobotPosRequested);
     connect(start_stopButton, &QPushButton::clicked, this, &buttonView::start_stopSimulRequested);
     connect(colorAnimationButton, &QPushButton::clicked, this, [=]() {
-        QColor color = QColorDialog::getColor(Qt::green, this, "Animation color");
-        if (color.isValid()) {
-            emit colorAnimationChanged(color);
-        }
+        auto* dialog = new QColorDialog(this);
+        dialog->setCurrentColor(Qt::cyan);
+        dialog->setOption(QColorDialog::ShowAlphaChannel);
+
+        connect(dialog, &QColorDialog::currentColorChanged, this, [=](QColor color){
+            emit colorAnimationChanged(color); // envoi immédiat
+        });
+
+        dialog->open();
     });
+
     connect(colorRobotButton, &QPushButton::clicked, this, [=]() {
-        QColor color = QColorDialog::getColor(Qt::red, this, "Robot color");
-        if (color.isValid()) emit colorRobotChanged(color);
+        auto* dialog = new QColorDialog(this);
+        dialog->setCurrentColor(Qt::red);
+
+        connect(dialog, &QColorDialog::currentColorChanged, this, [=](QColor color){
+            emit colorRobotChanged(color);
+        });
+
+        dialog->open();
     });
+
     connect(colorWallButton, &QPushButton::clicked, this, [=]() {
-        QColor color = QColorDialog::getColor(Qt::black, this, "Walls color");
-        if (color.isValid()) emit colorWallChanged(color);
+        auto* dialog = new QColorDialog(this);
+        dialog->setCurrentColor(Qt::black);
+
+        connect(dialog, &QColorDialog::currentColorChanged, this, [=](QColor color){
+            emit colorWallChanged(color);
+        });
+
+        dialog->open();
     });
+
     connect(colorExitButton, &QPushButton::clicked, this, [=]() {
-        QColor color = QColorDialog::getColor(Qt::green, this, "Exit color");
-        if (color.isValid()) emit colorExitChanged(color);
+        auto* dialog = new QColorDialog(this);
+        dialog->setCurrentColor(Qt::green);
+
+        connect(dialog, &QColorDialog::currentColorChanged, this, [=](QColor color){
+            emit colorExitChanged(color);
+        });
+
+        dialog->open();
     });
+
 }
 
 // Extract rows from the Line Edit
