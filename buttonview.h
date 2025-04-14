@@ -8,6 +8,8 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QProgressBar>
+#include <QColorDialog>
+#include <QColor>
 
 class buttonView : public QWidget
 {
@@ -22,6 +24,10 @@ signals:
     void randMazeRequested();
     void randRobotPosRequested();
     void start_stopSimulRequested();
+    void colorAnimationChanged(const QColor&);
+    void colorRobotChanged(const QColor&);
+    void colorWallChanged(const QColor&);
+    void colorExitChanged(const QColor&);
 
 private:
     QPushButton *saveButton;
@@ -29,6 +35,10 @@ private:
     QPushButton *randomMazeButton;
     QPushButton *randomRobotButton;
     QPushButton *start_stopButton;
+    QPushButton *colorAnimationButton;
+    QPushButton *colorRobotButton;
+    QPushButton *colorWallButton;
+    QPushButton *colorExitButton;
     QLineEdit *rows;
     QLineEdit *cols;
     QLabel *win;

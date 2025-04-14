@@ -1,44 +1,68 @@
 #include "gamecontroller.h"
 
 // Parameter constructor
-GameController::GameController(Maze *maze, InputView *iv, OutputView *ov, Algorithm *algo, buttonView* bv)
+GameController::GameController(Maze *maze, OutputView *ov, Algorithm *algo, buttonView* bv)
 {
+    // Initialize attributes
     model = maze;
-    inputView = iv;
     outputView = ov;
     algorithm = algo;
     btnView = bv;
     start_stop = false;
     timeOfAnimation = 0;
 
+    // Connect button events to functions
     connect(btnView, &buttonView::saveRequested, this, &GameController::saveMazeToFile);
     connect(btnView, &buttonView::loadRequested, this, &GameController::loadMazeFromFile);
     connect(btnView, &buttonView::randMazeRequested, this, &GameController::generateRandMaze);
     connect(btnView, &buttonView::randRobotPosRequested, this, &GameController::placeRobot);
     connect(btnView, &buttonView::start_stopSimulRequested, this, &GameController::start_stopSimulation);
+    connect(btnView, &buttonView::colorAnimationChanged, this, [=](QColor c){
+        animationColor = c;
+        model->notifyObservers();
+    });
+    connect(btnView, &buttonView::colorRobotChanged, this, [=](QColor c){
+        robotColor = c;
+        model->notifyObservers();
+    });
+    connect(btnView, &buttonView::colorWallChanged, this, [=](QColor c){
+        wallColor = c;
+        model->notifyObservers();
+    });
+    connect(btnView, &buttonView::colorExitChanged, this, [=](QColor c){
+        exitColor = c;
+        model->notifyObservers();
+    });
 
-    model->subscribe(ov);
-    outputView->setAlgorithm(algorithm);
+    // Set the timers
     timer = new QTimer(this);
     timer2 = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &GameController::ComputeNextMove);
     connect(timer2, &QTimer::timeout, this, &GameController::handleAnimationTimer);
+
+    // Others
+    model->subscribe(ov);
+    outputView->setAlgorithm(algorithm);
 }
 
 // Reset attributes and simulation
 void GameController::reset()
 {
-    btnView->hideProcessingUI();
+    btnView->hideProcessingUI(); // End UI graphic process
+    // Stop the timers
     timer->stop();
-    timeOfAnimation = 0;
-    indexAnim = 0;
-    start_stop = false;
-    model->setWin(false);
-    algorithm->resetPaths();
-    model->setRobotPosition(Coord(1, 1)); // safety
+    timer2->stop();
+    timeOfAnimation = 0; // Reset the chronometer variable
+    indexAnim = 0; // Reset the index for the animation when exit is found
+    start_stop = false; // Not in start mode
+    model->setWin(false); // Not in win mode
+    algorithm->resetPaths(); // Clear the vector that contains the path and the optimal path
+    model->setRobotPosition(Coord(1, 1)); // Place robot to initial position
 }
+
 // Start the whole game
 void GameController::startGame(){
+    // Configure the timers to 1ms and start them
     timer->start(1);
     timer2->start(1);
 }
@@ -46,18 +70,19 @@ void GameController::startGame(){
 // The brain function that manage all the functions calls and conditions
 void GameController::ComputeNextMove()
 {
-    checkVictory();
+    checkVictory(); // Check if robot is on exit position
     // Still haven't found the exit
     if(!model->hasWon()){
+        // Start the algorithm to search the exit and display the processing UI
         algorithm->leftWallFollower(model, model->getRobotPosition());
         btnView->showProcessingUI();
-        //model->notifyObservers();
     }
     else // exit found by robot !
     {
-        timer2->stop();
+        timer2->stop(); // Stop the timer that handle the chronometer
         timer->start(10); // Lower the speed to admire the animation
-        btnView->winProcessingUI();
+        btnView->winProcessingUI(); // Change the UI label
+        // Used to call only once the algorithm to find the optimal path
         if(indexAnim==0)
             algorithm->findOptimalPath();
         // Manage the animation to show optimal Path
@@ -66,31 +91,31 @@ void GameController::ComputeNextMove()
             model->notifyObservers();
             indexAnim++;
         }
-        else{
+        else
             timer->stop();
-        }
     }
 }
 
+// Handle the simulation chronometer
 void GameController::handleAnimationTimer()
 {
     timeOfAnimation++;
     btnView->setTimer(timeOfAnimation / 60000, (timeOfAnimation / 1000) % 60, timeOfAnimation % 1000);
 }
 
-
 // Check if robot has found the exit !
-bool GameController::checkVictory()
+void GameController::checkVictory()
 {
+    // Collect the exit and the robot position
     Coord exitPos = model->getExitPosition();
     Coord robotPos = model->getRobotPosition();
+
+    // Is robot on the exit position ?
     if(robotPos == exitPos){
+        // Place robot at where he started to start the animation
         model->setRobotPosition(model->getInitRobotPosition());
-        model->setWin(true);
-        return true;
+        model->setWin(true); // We enter the "win" mode that will display the animation
     }
-    else
-        return false;
 }
 
 // Get the index of the optimal Path vector
@@ -152,12 +177,15 @@ void GameController::loadMazeFromFile()
         model->notifyObservers();
     }
 }
-// Button start the simulation
+
+// Button "start/stop"
 void GameController::start_stopSimulation(){
-    start_stop=!start_stop;
-    if(start_stop && model->getGenerated())
+    start_stop=!start_stop; // Invert the variable when button is clicked
+    // Variable is start, a maze has been generated and robot hasn't found the exit
+    if(start_stop && model->getGenerated() && !(model->hasWon()))
         startGame();
-    else if(model->getGenerated()){
+    // Variable is stop, a maze has been generated and robot hasn't found the exit
+    else if(model->getGenerated() && !(model->hasWon())){
         timer2->stop();
         timer->stop();
         btnView->pauseProcessingUI();
@@ -166,7 +194,7 @@ void GameController::start_stopSimulation(){
 
 // Button generate a new random Maze
 void GameController::generateRandMaze(){
-    // Limite de taille minimale pour le Maze
+    // Minimum size for the maze generation
     if(btnView->getRows() > 4 && btnView->getCols() > 4){
         reset();
         model->setGenerated(true);
@@ -176,7 +204,7 @@ void GameController::generateRandMaze(){
     }
 }
 
-// Button change robot position
+// Button "change robot position"
 void GameController::placeRobot(){
     if(model->getGenerated()){
         reset();
@@ -184,3 +212,8 @@ void GameController::placeRobot(){
         model->notifyObservers();
     }
 }
+
+QColor GameController::getAnimationColor() const { return animationColor; }
+QColor GameController::getRobotColor() const { return robotColor; }
+QColor GameController::getWallColor() const { return wallColor; }
+QColor GameController::getExitColor() const { return exitColor; }

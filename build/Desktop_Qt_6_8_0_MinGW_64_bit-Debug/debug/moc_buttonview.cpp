@@ -42,7 +42,11 @@ constexpr auto qt_meta_stringdata_CLASSbuttonViewENDCLASS = QtMocHelpers::string
     "loadRequested",
     "randMazeRequested",
     "randRobotPosRequested",
-    "start_stopSimulRequested"
+    "start_stopSimulRequested",
+    "colorAnimationChanged",
+    "colorRobotChanged",
+    "colorWallChanged",
+    "colorExitChanged"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -55,19 +59,23 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSbuttonViewENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       5,       // signalCount
+       9,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   44,    2, 0x06,    1 /* Public */,
-       3,    0,   45,    2, 0x06,    2 /* Public */,
-       4,    0,   46,    2, 0x06,    3 /* Public */,
-       5,    0,   47,    2, 0x06,    4 /* Public */,
-       6,    0,   48,    2, 0x06,    5 /* Public */,
+       1,    0,   68,    2, 0x06,    1 /* Public */,
+       3,    0,   69,    2, 0x06,    2 /* Public */,
+       4,    0,   70,    2, 0x06,    3 /* Public */,
+       5,    0,   71,    2, 0x06,    4 /* Public */,
+       6,    0,   72,    2, 0x06,    5 /* Public */,
+       7,    1,   73,    2, 0x06,    6 /* Public */,
+       8,    1,   76,    2, 0x06,    8 /* Public */,
+       9,    1,   79,    2, 0x06,   10 /* Public */,
+      10,    1,   82,    2, 0x06,   12 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -75,6 +83,10 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSbuttonViewENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QColor,    2,
+    QMetaType::Void, QMetaType::QColor,    2,
+    QMetaType::Void, QMetaType::QColor,    2,
+    QMetaType::Void, QMetaType::QColor,    2,
 
        0        // eod
 };
@@ -97,7 +109,19 @@ Q_CONSTINIT const QMetaObject buttonView::staticMetaObject = { {
         // method 'randRobotPosRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'start_stopSimulRequested'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'colorAnimationChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QColor &, std::false_type>,
+        // method 'colorRobotChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QColor &, std::false_type>,
+        // method 'colorWallChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QColor &, std::false_type>,
+        // method 'colorExitChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QColor &, std::false_type>
     >,
     nullptr
 } };
@@ -113,6 +137,10 @@ void buttonView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 2: _t->randMazeRequested(); break;
         case 3: _t->randRobotPosRequested(); break;
         case 4: _t->start_stopSimulRequested(); break;
+        case 5: _t->colorAnimationChanged((*reinterpret_cast< std::add_pointer_t<QColor>>(_a[1]))); break;
+        case 6: _t->colorRobotChanged((*reinterpret_cast< std::add_pointer_t<QColor>>(_a[1]))); break;
+        case 7: _t->colorWallChanged((*reinterpret_cast< std::add_pointer_t<QColor>>(_a[1]))); break;
+        case 8: _t->colorExitChanged((*reinterpret_cast< std::add_pointer_t<QColor>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -152,8 +180,35 @@ void buttonView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
                 return;
             }
         }
+        {
+            using _t = void (buttonView::*)(const QColor & );
+            if (_t _q_method = &buttonView::colorAnimationChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 5;
+                return;
+            }
+        }
+        {
+            using _t = void (buttonView::*)(const QColor & );
+            if (_t _q_method = &buttonView::colorRobotChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 6;
+                return;
+            }
+        }
+        {
+            using _t = void (buttonView::*)(const QColor & );
+            if (_t _q_method = &buttonView::colorWallChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 7;
+                return;
+            }
+        }
+        {
+            using _t = void (buttonView::*)(const QColor & );
+            if (_t _q_method = &buttonView::colorExitChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 8;
+                return;
+            }
+        }
     }
-    (void)_a;
 }
 
 const QMetaObject *buttonView::metaObject() const
@@ -175,13 +230,13 @@ int buttonView::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 9;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 9)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 9;
     }
     return _id;
 }
@@ -214,5 +269,33 @@ void buttonView::randRobotPosRequested()
 void buttonView::start_stopSimulRequested()
 {
     QMetaObject::activate(this, &staticMetaObject, 4, nullptr);
+}
+
+// SIGNAL 5
+void buttonView::colorAnimationChanged(const QColor & _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 5, _a);
+}
+
+// SIGNAL 6
+void buttonView::colorRobotChanged(const QColor & _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 6, _a);
+}
+
+// SIGNAL 7
+void buttonView::colorWallChanged(const QColor & _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 7, _a);
+}
+
+// SIGNAL 8
+void buttonView::colorExitChanged(const QColor & _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 8, _a);
 }
 QT_WARNING_POP

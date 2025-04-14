@@ -30,60 +30,19 @@ Maze::Maze(){
 // Parameter constructor
 Maze::Maze(int rows, int col)
 {
-    robotPosition = (1, 1); // absent initialement
+    robotPosition = (1, 1); // Initial robot position
+    // Grid is initialy filled with walls (1)
     grid = std::vector<std::vector<int>>(rows, std::vector<int>(col, 1));
 }
 
-// This function is able to generate random perfect maze (create issue because dfs gets to limit with big maze)
-/*void Maze::generateMaze(int rows, int cols)
-{
-
-    // Initialing grid with only walls
-    grid = std::vector<std::vector<int>>(rows, std::vector<int>(cols, 1));
-
-    std::function<void(int, int)> dfs;
-
-    dfs = [&](int y, int x){
-        grid[y][x] = 0;
-
-        std::vector<Coord> directions = {
-            {2, 0},
-            {-2, 0},
-            {0, 2},
-            {0, -2}
-        };
-        std::shuffle(directions.begin(), directions.end(), std::mt19937(std::random_device()()));
-        for(auto dir : directions){
-            int nx = x + dir.x;
-            int ny = y + dir.y;
-            if(nx > 0 && nx < cols - 1 && ny > 0 && ny < rows -  1 && grid[ny][nx]==1){
-                grid[y + dir.y/2][x + dir.x/2] = 0;
-                dfs(ny, nx);
-            }
-        }
-
-    };
-
-    dfs(1,1); // Initialize the dfs function at 1, 1
-    // Placing an exit on the maze
-    for (int y = rows - 2; y > 0; y--) {
-        for (int x = cols - 2; x > 0; x--) {
-            if (grid[y][x] == 0) {
-                grid[y][x] = 2;
-                exitPosition = Coord(x, y);
-                return;
-            }
-        }
-    }
-}*/
-
+// Generate a random Maze with stack
 void Maze::generateMaze(int rows, int cols)
 {
-    // Initialise le labyrinthe avec des murs partout (1)
+    // Grid is initialy filled with walls (1)
     grid = std::vector<std::vector<int>>(rows, std::vector<int>(cols, 1));
 
     std::stack<Coord> stack;
-    stack.push(Coord(1, 1)); // Point de départ
+    stack.push(Coord(1, 1)); // Starting point
     grid[1][1] = 0;
 
     std::mt19937 rng(std::random_device{}());
@@ -102,7 +61,7 @@ void Maze::generateMaze(int rows, int cols)
             int ny = current.y + dir.y;
 
             if (nx > 0 && nx < cols - 1 && ny > 0 && ny < rows - 1 && grid[ny][nx] == 1) {
-                // Creuse entre les deux cellules
+                // Remove the walls between the cells
                 grid[current.y + dir.y / 2][current.x + dir.x / 2] = 0;
                 grid[ny][nx] = 0;
 
@@ -113,18 +72,11 @@ void Maze::generateMaze(int rows, int cols)
         }
 
         if (!moved) {
-            stack.pop(); // Aucun move possible → backtrack
+            stack.pop(); // No possible move → backtrack
         }
     }
-
+    // Call the function to add an exit where it is possible
     placeExit(rows, cols);
-}
-
-
-void Maze::resetMaze()
-{
-    robotPosition = (1, 1); // absent initialement
-    grid = std::vector<std::vector<int>>(rows, std::vector<int>(col, 1));
 }
 
 // Place the robot in any free cells of the maze randomly
@@ -173,17 +125,15 @@ std::vector<std::vector<int> > Maze::getGrid() { return grid; }
 // Set the robot position
 void Maze::setRobotPosition(Coord pos) { robotPosition = pos; }
 
-void Maze::setGenerated(bool state)
-{
-    generated = state;
-}
+// Set the variable that allows me to know if a maze has beeen generated
+void Maze::setGenerated(bool state){ generated = state; }
 
 // Return true if robot found the exit
 bool Maze::hasWon(){ return Win; }
 
 void Maze::placeExit(int rows, int cols)
 {
-    // Place une sortie tout au fond
+    // Place an exit on the end of the maze
     for (int y = rows - 2; y > 0; y--) {
         for (int x = cols - 2; x > 0; x--) {
             if (grid[y][x] == 0) {
@@ -196,9 +146,7 @@ void Maze::placeExit(int rows, int cols)
 }
 
 // Add an observer to the list
-void Maze::subscribe(Observer* o) {
-    observers.push_back(o);
-}
+void Maze::subscribe(Observer* o) { observers.push_back(o); }
 
 // Notify observers of changes
 void Maze::notifyObservers() {
@@ -213,12 +161,10 @@ int Maze::getRows() const{ return grid.size();}
 // Return the # of cols in the maze
 int Maze::getCol() const{ return grid[0].size();}
 
-bool Maze::getGenerated() const
-{
-    return generated;
-}
+bool Maze::getGenerated() const { return generated; }
 
 // Set Winning state after finding the exit with robot
 void Maze::setWin(bool state){ Win = state; }
 
+// Set the grid attribute
 void Maze::setGrid(const std::vector<std::vector<int> > &newGrid) { grid = newGrid; }

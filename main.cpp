@@ -5,7 +5,7 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    // 🔥 Création du GameController via la Factory
+    // Creation of controller
     GameController* controller = GameFactory::createGameController();
 
     return app.exec();

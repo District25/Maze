@@ -13,7 +13,6 @@ SOURCES += \
     buttonview.cpp \
     gamecontroller.cpp \
     gamefactory.cpp \
-    inputview.cpp \
     main.cpp \
     mainwindow.cpp \
     maze.cpp \
@@ -27,7 +26,6 @@ HEADERS += \
     buttonview.h \
     gamecontroller.h \
     gamefactory.h \
-    inputview.h \
     mainwindow.h \
     maze.h \
     outputview.h

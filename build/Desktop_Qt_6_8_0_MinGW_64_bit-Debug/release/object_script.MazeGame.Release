@@ -2,7 +2,6 @@ release/algorithm.o
 release/buttonview.o
 release/gamecontroller.o
 release/gamefactory.o
-release/inputview.o
 release/main.o
 release/mainwindow.o
 release/maze.o

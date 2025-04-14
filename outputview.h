@@ -6,7 +6,6 @@
 #include <QGraphicsView>
 #include <QGraphicsRectItem>
 
-#include "Coord.h"
 #include "Observer.h"
 #include "maze.h"
 #include "algorithm.h"

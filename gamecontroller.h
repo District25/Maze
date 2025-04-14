@@ -7,7 +7,6 @@
 
 #include "outputview.h"
 #include "maze.h"
-#include "inputview.h"
 #include "algorithm.h"
 #include "buttonview.h"
 
@@ -17,20 +16,27 @@ private:
     QTimer* timer;
     QTimer* timer2;
     Maze* model;
-    InputView* inputView;
     OutputView* outputView;
     Algorithm* algorithm;
     buttonView* btnView;
     size_t indexAnim;
     bool start_stop; // true = start, false = stop
     int timeOfAnimation;
+    QColor animationColor = Qt::cyan;
+    QColor robotColor = Qt::red;
+    QColor wallColor = Qt::black;
+    QColor exitColor = Qt::green;
 public:
-    GameController(Maze* maze, InputView* iv, OutputView* ov, Algorithm* algo, buttonView* bv);
+    GameController(Maze* maze, OutputView* ov, Algorithm* algo, buttonView* bv);
     void reset();
     void startGame();
-    bool checkVictory();
+    void checkVictory();
     size_t getIndexAnim() const;
     Maze* getMaze();
+    QColor getAnimationColor() const;
+    QColor getRobotColor() const;
+    QColor getWallColor() const;
+    QColor getExitColor() const;
 public slots:
     void ComputeNextMove();
     void handleAnimationTimer();

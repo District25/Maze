@@ -10,28 +10,32 @@ buttonView::buttonView(QWidget *parent) : QWidget(parent)
     randomMazeButton = new QPushButton("Generate random maze");
     randomRobotButton = new QPushButton("Change robot position");
     start_stopButton = new QPushButton("Start/Stop");
+    colorAnimationButton = new QPushButton("Chose the animation color");
+    colorRobotButton = new QPushButton("Chose the robot color");
+    colorWallButton = new QPushButton("Chose the wall color");
+    colorExitButton = new QPushButton("Chose the exit color");
 
-    rows = new QLineEdit("80");
-    rows->setPlaceholderText("Enter width size (10-100)");
-    cols = new QLineEdit("80");
-    cols->setPlaceholderText("Enter height size (10-100)");
+    rows = new QLineEdit("");
+    rows->setPlaceholderText("Enter width size (5-100)");
+    cols = new QLineEdit("");
+    cols->setPlaceholderText("Enter height size (5-100)");
 
-    // Style des champs input
-    rows->setFixedWidth(120);
-    cols->setFixedWidth(120);
+    // Input size
+    rows->setFixedWidth(160);
+    cols->setFixedWidth(160);
 
-    // Barre et label de progression
+    // Label and progression bar
     statusLabel = new QLabel("");
     progressBar = new QProgressBar();
     progressBar->setRange(0, 0); // mode indéterminé
     progressBar->setVisible(false);
     statusLabel->setVisible(false);
 
-    // Label du Timer
+    // Timer label
     timer = new QLabel("00:00:00");
     timer->setVisible(false);
 
-    // Style du label
+    // Label style
     QFont font = statusLabel->font();
     font.setPointSize(18);
     font.setBold(true);
@@ -46,7 +50,7 @@ buttonView::buttonView(QWidget *parent) : QWidget(parent)
 
     // === Layouts ===
 
-    // Ligne pour les inputs
+    // Lign for inputs
     QHBoxLayout *inputLayout = new QHBoxLayout;
     inputLayout->addStretch();
     inputLayout->addWidget(rows);
@@ -54,7 +58,7 @@ buttonView::buttonView(QWidget *parent) : QWidget(parent)
     inputLayout->addWidget(cols);
     inputLayout->addStretch();
 
-    // Layout principal vertical
+    // Principle vertical layout
     QVBoxLayout *layout = new QVBoxLayout;
 
     layout->addSpacing(20);
@@ -69,9 +73,15 @@ buttonView::buttonView(QWidget *parent) : QWidget(parent)
     layout->addWidget(saveButton);
     layout->addWidget(loadButton);
 
-    layout->addStretch(); // pousse tout vers le haut
+    layout->addSpacing(40);
+    layout->addWidget(colorAnimationButton);
+    layout->addWidget(colorRobotButton);
+    layout->addWidget(colorWallButton);
+    layout->addWidget(colorExitButton);
 
-    // Barre de chargement et texte en bas
+    layout->addStretch(); // Push everything on top
+
+    // Loading bar and text
     layout->addSpacing(20);
     layout->addWidget(statusLabel);
     layout->addWidget(progressBar);
@@ -82,25 +92,88 @@ buttonView::buttonView(QWidget *parent) : QWidget(parent)
 
     this->setLayout(layout);
 
+    QString buttonStyle = R"(
+    QPushButton {
+        background-color: #2c2c2c;
+        color: white;
+        border: 1px solid #555;
+        border-radius: 6px;
+        padding: 6px;
+        font-size: 12px;
+    }
+    QPushButton:hover {
+        background-color: #3d3d3d;
+    }
+    QPushButton:pressed {
+        background-color: #1e1e1e;
+    }
+
+    QLineEdit {
+        background-color: #1e1e1e;
+        color: #ddd;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 4px;
+    }
+
+    QLabel {
+        color: white;
+    }
+
+    QProgressBar {
+        border: 1px solid #555;
+        border-radius: 5px;
+        text-align: center;
+        background-color: #222;
+        color: white;
+    }
+
+    QProgressBar::chunk {
+        background-color: #0078D7;
+    }
+    )";
+    this->setStyleSheet(buttonStyle);
+
+
     // === Connexions ===
     connect(saveButton, &QPushButton::clicked, this, &buttonView::saveRequested);
     connect(loadButton, &QPushButton::clicked, this, &buttonView::loadRequested);
     connect(randomMazeButton, &QPushButton::clicked, this, &buttonView::randMazeRequested);
     connect(randomRobotButton, &QPushButton::clicked, this, &buttonView::randRobotPosRequested);
     connect(start_stopButton, &QPushButton::clicked, this, &buttonView::start_stopSimulRequested);
+    connect(colorAnimationButton, &QPushButton::clicked, this, [=]() {
+        QColor color = QColorDialog::getColor(Qt::green, this, "Animation color");
+        if (color.isValid()) {
+            emit colorAnimationChanged(color);
+        }
+    });
+    connect(colorRobotButton, &QPushButton::clicked, this, [=]() {
+        QColor color = QColorDialog::getColor(Qt::red, this, "Robot color");
+        if (color.isValid()) emit colorRobotChanged(color);
+    });
+    connect(colorWallButton, &QPushButton::clicked, this, [=]() {
+        QColor color = QColorDialog::getColor(Qt::black, this, "Walls color");
+        if (color.isValid()) emit colorWallChanged(color);
+    });
+    connect(colorExitButton, &QPushButton::clicked, this, [=]() {
+        QColor color = QColorDialog::getColor(Qt::green, this, "Exit color");
+        if (color.isValid()) emit colorExitChanged(color);
+    });
 }
 
-
+// Extract rows from the Line Edit
 int buttonView::getRows() const
 {
     return rows->text().toInt();
 }
 
+// Extract cols from the Line Edit
 int buttonView::getCols() const
 {
     return cols->text().toInt();
 }
 
+// Display the UI while searching the exit
 void buttonView::showProcessingUI()
 {
     statusLabel->setText("Robot is searching the exit...");
@@ -109,13 +182,16 @@ void buttonView::showProcessingUI()
     timer->setVisible(true);
 }
 
+// Display the UI after robot has found the exit
 void buttonView::winProcessingUI()
 {
-    statusLabel->setText("Robot has found the exit!");
+    statusLabel->setText("Robot has found the exit!\n"
+                         "Admire the animation :)");
     statusLabel->setVisible(true);
     progressBar->setVisible(false);
 }
 
+// Hide the processing UI
 void buttonView::hideProcessingUI()
 {
     statusLabel->setText("");
@@ -124,6 +200,7 @@ void buttonView::hideProcessingUI()
     timer->setVisible(false);
 }
 
+// Display the UI after a pause has been requested
 void buttonView::pauseProcessingUI()
 {
     statusLabel->setText("Pausing process...");
@@ -131,6 +208,7 @@ void buttonView::pauseProcessingUI()
     progressBar->setVisible(false);
 }
 
+// Set the Label with the chronometer value and display it
 void buttonView::setTimer(int min, int sec, int cent)
 {
     QString timeText = QString("%1:%2:%3")

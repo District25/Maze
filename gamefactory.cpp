@@ -4,12 +4,11 @@
 GameController *GameFactory::createGameController()
 {
     Maze* maze = createMaze();
-    InputView* iv = createInputView();
     OutputView* ov = createOutputView(maze, nullptr);
     Algorithm* algo = createAlgorithm();
     buttonView* bv = createButtonView(nullptr);
 
-    GameController* gc = new GameController(maze, iv, ov, algo, bv);
+    GameController* gc = new GameController(maze, ov, algo, bv);
     ov->setController(gc);
 
     QWidget* mainWidget = new QWidget;
@@ -37,13 +36,6 @@ buttonView *GameFactory::createButtonView(QWidget* parent)
 Maze *GameFactory::createMaze()
 {
     return new Maze(100, 100);
-}
-
-
-// Create the inputView
-InputView *GameFactory::createInputView()
-{
-    return new InputView();
 }
 
 // Create the outputView

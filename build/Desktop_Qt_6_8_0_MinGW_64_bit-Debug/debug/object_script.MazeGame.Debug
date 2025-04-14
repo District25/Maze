@@ -2,7 +2,6 @@ debug/algorithm.o
 debug/buttonview.o
 debug/gamecontroller.o
 debug/gamefactory.o
-debug/inputview.o
 debug/main.o
 debug/mainwindow.o
 debug/maze.o

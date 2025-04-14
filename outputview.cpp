@@ -24,6 +24,7 @@ void OutputView::setController(GameController *gc)
 {
     controller = gc;
 }
+
 void OutputView::setAlgorithm(Algorithm *algorithm)
 {
     this->algo = algorithm;
@@ -31,15 +32,12 @@ void OutputView::setAlgorithm(Algorithm *algorithm)
 
 
 // Update what the observers see
-void OutputView::update()
-{
-    drawMaze();
-}
+void OutputView::update() { drawMaze(); }
 
 // Draw the all maze process in a window
 void OutputView::drawMaze()
 {
-    scene->clear();  // Nettoyage avant redessin
+    scene->clear();  // Clearing before redraw
 
     Coord robotPos = model->getRobotPosition();
     Coord exitPos = model->getExitPosition();
@@ -50,27 +48,26 @@ void OutputView::drawMaze()
             QGraphicsRectItem *rect = scene->addRect(cell);
 
             if (!model->isCellFree(x, y)) {
-                rect->setBrush(QColor(Qt::black));  // mur foncé
+                rect->setBrush(controller->getWallColor());  // Black walls
                 rect->setPen(Qt::NoPen);
             } else if (robotPos.x == x && robotPos.y == y)
-                rect->setBrush(Qt::red);
+                rect->setBrush(controller->getRobotColor()); // Red robot
                 else if(exitPos.x == x && exitPos.y == y){
-                    rect->setBrush(Qt::green);
+                    rect->setBrush(controller->getExitColor()); // Green exit
             } else {
-                rect->setBrush(QColor(Qt::white));  // couloir clair
-                rect->setPen(QPen(QColor(Qt::white)));       // contour léger
+                rect->setBrush(QColor(Qt::white));  // White path
+                rect->setPen(QPen(QColor(Qt::white)));
             }
         }
     }
+    // Only enter here after robot has found the exit (win mode -> animation)
     if (model->hasWon() && !algo->getOptimalPath().empty() && controller) {
         size_t trailLength = controller->getIndexAnim();
 
         for (size_t i = 0; i < trailLength && i < algo->getOptimalPath().size(); ++i) {
             Coord p = algo->getOptimalPath()[i];
             QRectF cell(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
-            QGraphicsRectItem *rect = scene->addRect(cell);
-            rect->setBrush(QColor(Qt::cyan));
-            rect->setPen(QPen(QColor(Qt::cyan)));
+            scene->addRect(cell, QPen(Qt::NoPen), QBrush(controller->getAnimationColor()));
         }
     }
     scene->setSceneRect(0, 0, model->getCol() * cellSize, model->getRows() * cellSize);

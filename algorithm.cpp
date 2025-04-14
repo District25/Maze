@@ -115,11 +115,11 @@ void Algorithm::leftWallFollower(Maze *maze, Coord currentPos)
     }
 }
 
-// Remove iterations of fullPath and so get the direct wqy to the exit
+// Remove iterations of fullPath and so get the direct way to the exit
 void Algorithm::findOptimalPath() {
     std::vector<Coord> stack;
     for (const Coord& pos : fullPath) {
-        // If Coord alredy visited
+        // If Coord is already visited
         auto it = std::find(stack.begin(), stack.end(), pos);
         if (it != stack.end()) {
             stack.erase(it + 1, stack.end()); // remove backtracked path
@@ -130,9 +130,11 @@ void Algorithm::findOptimalPath() {
 
     optimalPath = stack;
 }
+
 // Return the complete optimal path with the Coord value
 const std::vector<Coord>& Algorithm::getOptimalPath() const { return optimalPath; }
 
+// Clear the different vectors of this class, used when a reset is called
 void Algorithm::resetPaths()
 {
     optimalPath.clear();
