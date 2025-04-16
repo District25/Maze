@@ -1,77 +1,128 @@
 #include "outputview.h"
 #include <QDebug>
 #include "gamecontroller.h"
-
+#include <set>
 
 using namespace std;
 
-int cellSize = 5; // Changes the size of the cell we see on window
+int cellSize = 6; // Plus clean que 5, évite le flou sur gros labyrinthes
 
-// Constructor and set scene
-OutputView::OutputView(Maze *maze, QWidget *parent) : QGraphicsView(parent), model(maze) {
-    int width = (model->getCol() + 2) * cellSize;
-    int height = (model->getRows() + 2) * cellSize;
-
+OutputView::OutputView(Maze *maze, QWidget *parent) : QGraphicsView(parent), model(maze)
+{
     this->setMinimumSize(600, 600);
 
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(-cellSize, -cellSize, width, height);
-    scene->setBackgroundBrush(Qt::white);
     this->setScene(scene);
+
+    // Optimisation affichage
+    this->setRenderHint(QPainter::Antialiasing, false);
+    this->setRenderHint(QPainter::TextAntialiasing, false);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    this->setResizeAnchor(QGraphicsView::AnchorViewCenter);
 }
 
-void OutputView::setController(GameController *gc)
-{
+void OutputView::setController(GameController *gc) {
     controller = gc;
 }
 
-void OutputView::setAlgorithm(Algorithm *algorithm)
-{
+void OutputView::setAlgorithm(Algorithm *algorithm) {
     this->algo = algorithm;
 }
 
-
-// Update what the observers see
-void OutputView::update() { drawMaze(); }
-
-// Draw the all maze process in a window
-void OutputView::drawMaze()
+void OutputView::initGrid()
 {
-    scene->clear();  // Clearing before redraw
+    scene->clear();
+    visitedTrail.clear();
+    rectGrid.clear();
+
+    int rows = model->getRows();
+    int cols = model->getCol();
+    rectGrid.resize(rows, std::vector<QGraphicsRectItem*>(cols, nullptr));
+
+    for (int y = 0; y < rows; ++y) {
+        for (int x = 0; x < cols; ++x) {
+            QRectF cell(x * cellSize, y * cellSize, cellSize, cellSize);
+            auto* rect = scene->addRect(cell);
+            rect->setPen(Qt::NoPen);
+            rect->setBrush(Qt::white);
+            rectGrid[y][x] = rect;
+        }
+    }
+
+    // Adapter la taille de la scène à la grille
+    scene->setSceneRect(0, 0, cols * cellSize, rows * cellSize);
+    this->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void OutputView::updateAllWalls()
+{
+    for (int y = 0; y < model->getRows(); ++y) {
+        for (int x = 0; x < model->getCol(); ++x) {
+            if (!model->isCellFree(x, y)) {
+                updateCell(x, y); // Affiche les murs uniquement
+            }
+        }
+    }
+}
+
+void OutputView::updateCell(int x, int y)
+{
+    if (y >= rectGrid.size() || x >= rectGrid[y].size()) return;
+
+    QGraphicsRectItem* rect = rectGrid[y][x];
+    if (!rect) return;
 
     Coord robotPos = model->getRobotPosition();
     Coord exitPos = model->getExitPosition();
 
-    for (int y = 0; y < model->getRows(); y++) {
-        for (int x = 0; x < model->getCol(); x++) {
-            QRectF cell(x * cellSize, y * cellSize, cellSize, cellSize);
-            QGraphicsRectItem *rect = scene->addRect(cell);
-
-            if (!model->isCellFree(x, y)) {
-                rect->setBrush(controller->getWallColor());  // Black walls
-                rect->setPen(Qt::NoPen);
-            } else if (robotPos.x == x && robotPos.y == y)
-                rect->setBrush(controller->getRobotColor()); // Red robot
-                else if(exitPos.x == x && exitPos.y == y){
-                    rect->setBrush(controller->getExitColor()); // Green exit
-            } else {
-                rect->setBrush(QColor(Qt::white));  // White path
-                rect->setPen(QPen(QColor(Qt::white)));
-            }
-        }
+    // Le robot doit être affiché EN PRIORITÉ
+    if (robotPos.x == x && robotPos.y == y) {
+        rect->setBrush(controller->getRobotColor());
     }
-    // Only enter here after robot has found the exit (win mode -> animation)
-    if (model->hasWon() && !algo->getOptimalPath().empty() && controller) {
-        size_t trailLength = controller->getIndexAnim();
-
-        for (size_t i = 0; i < trailLength && i < algo->getOptimalPath().size(); ++i) {
-            Coord p = algo->getOptimalPath()[i];
-            QRectF cell(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
-            scene->addRect(cell, QPen(Qt::NoPen), QBrush(controller->getAnimationColor()));
-        }
+    else if (!model->isCellFree(x, y)) {
+        rect->setBrush(controller->getWallColor());
     }
-    scene->setSceneRect(0, 0, model->getCol() * cellSize, model->getRows() * cellSize);
-    this->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+    else if (exitPos.x == x && exitPos.y == y) {
+        rect->setBrush(controller->getExitColor());
+    }
+    else if (visitedTrail.find(Coord(x, y)) != visitedTrail.end()) {
+        rect->setBrush(controller->getAnimationColor());
+    }
+    else {
+        rect->setBrush(Qt::white);
+    }
 }
 
+
+void OutputView::update() {
+    drawMaze();
+}
+
+void OutputView::drawMaze()
+{
+    if (rectGrid.empty()) return;
+
+    Coord robotPos = model->getRobotPosition();
+
+    // Animation : trace le chemin au fur et à mesure
+    if (model->hasWon() && !algo->getOptimalPath().empty()) {
+        size_t i = controller->getIndexAnim();
+        if (i < algo->getOptimalPath().size()) {
+            Coord p = algo->getOptimalPath()[i];
+            visitedTrail.insert(p);
+        }
+
+        // Colorier tout le trail d'abord
+        for (const Coord& c : visitedTrail) {
+            if (c.y < rectGrid.size() && c.x < rectGrid[c.y].size())
+                rectGrid[c.y][c.x]->setBrush(controller->getAnimationColor());
+        }
+    }
+
+    // Mettre à jour la case du robot EN DERNIER pour qu'elle soit par-dessus le trail
+    updateCell(robotPos.x, robotPos.y);
+}
 

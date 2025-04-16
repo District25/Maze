@@ -1,6 +1,9 @@
 #ifndef COORD_H
 #define COORD_H
 
+#include <tuple>  // Pour std::tie
+
+
 struct Coord {
     int x;
     int y;
@@ -11,7 +14,7 @@ struct Coord {
         return x == other.x && y == other.y;
     }
     bool operator<(const Coord& other) const {
-        return (x < other.x) || (x == other.x && y < other.y);
+        return std::tie(y, x) < std::tie(other.y, other.x);
     }
 };
 

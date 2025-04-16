@@ -31,6 +31,7 @@ public:
     void reset();
     void startGame();
     void checkVictory();
+    void setTimerSpeed();
     size_t getIndexAnim() const;
     Maze* getMaze();
     QColor getAnimationColor() const;

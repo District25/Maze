@@ -28,6 +28,7 @@ GameController::GameController(Maze *maze, OutputView *ov, Algorithm *algo, butt
     connect(btnView, &buttonView::colorWallChanged, this, [=](QColor c){
         wallColor = c;
         model->notifyObservers();
+        outputView->updateAllWalls();
     });
     connect(btnView, &buttonView::colorExitChanged, this, [=](QColor c){
         exitColor = c;
@@ -79,8 +80,7 @@ void GameController::ComputeNextMove()
     }
     else // exit found by robot !
     {
-        timer2->stop(); // Stop the timer that handle the chronometer
-        timer->start(10); // Lower the speed to admire the animation
+        setTimerSpeed();
         btnView->winProcessingUI(); // Change the UI label
         // Used to call only once the algorithm to find the optimal path
         if(indexAnim==0)
@@ -94,6 +94,17 @@ void GameController::ComputeNextMove()
         else
             timer->stop();
     }
+}
+
+void GameController::setTimerSpeed(){
+    if(model->getRows() >= 200 || model->getCol() >= 200)
+        timer->start(1);
+    else if((model->getRows() >= 100 && model->getRows() < 200) || (model->getCol() >= 100 && model->getCol() < 200))
+        timer->start(5);
+    else
+        timer->start(10);
+
+    timer2->stop();
 }
 
 // Handle the simulation chronometer
@@ -175,6 +186,14 @@ void GameController::loadMazeFromFile()
         model->setRobotPosition(model->placeRobotRandomly());
         model->setGenerated(true);
         model->notifyObservers();
+        outputView->initGrid();
+        outputView->updateAllWalls();
+        Coord robot = model->getRobotPosition();
+        outputView->updateCell(robot.x, robot.y);
+
+        Coord exit = model->getExitPosition();
+        outputView->updateCell(exit.x, exit.y);
+
     }
 }
 
@@ -201,6 +220,14 @@ void GameController::generateRandMaze(){
         model->generateMaze(btnView->getRows(), btnView->getCols());
         model->setRobotPosition(model->placeRobotRandomly());
         model->notifyObservers();
+        outputView->initGrid();
+        outputView->updateAllWalls();
+        Coord robot = model->getRobotPosition();
+        outputView->updateCell(robot.x, robot.y);
+
+        Coord exit = model->getExitPosition();
+        outputView->updateCell(exit.x, exit.y);
+
     }
 }
 
@@ -210,6 +237,14 @@ void GameController::placeRobot(){
         reset();
         model->setRobotPosition(model->placeRobotRandomly());
         model->notifyObservers();
+        outputView->initGrid();
+        outputView->updateAllWalls();
+        Coord robot = model->getRobotPosition();
+        outputView->updateCell(robot.x, robot.y);
+
+        Coord exit = model->getExitPosition();
+        outputView->updateCell(exit.x, exit.y);
+
     }
 }
 
